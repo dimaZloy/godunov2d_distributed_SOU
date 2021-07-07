@@ -95,6 +95,7 @@ end
 	residualsVector4::Array{Any,1},
 	residualsVectorMax::Array{Float64,1}, 
 	testMesh::mesh2d,
+	triangles::Array{Int64,2},
 	testFields::fields2d_shared,
 	solControls::CONTROLS,
 	output::outputCONTROLS,
@@ -148,7 +149,8 @@ end
 			# display(residualsVector1./residualsVectorMax[1])
 			
 			
-			tricontourf(testMesh.xNodes,testMesh.yNodes, densityF,pControls.nContours,vmin=pControls.rhoMINcont,vmax=pControls.rhoMAXcont);
+			tricontourf(testMesh.xNodes,testMesh.yNodes, triangles, densityF); ##pControls.nContours,vmin=pControls.rhoMINcont,vmax=pControls.rhoMAXcont);
+			tricontourf(testMesh.xNodes,testMesh.yNodes, triangles, densityF,pControls.nContours,vmin=pControls.rhoMINcont,vmax=pControls.rhoMAXcont);
 			#tricontour(testMesh.xNodes,testMesh.yNodes, testFields.densityNodes,pControls.nContours,vmin=pControls.rhoMINcont,vmax=pControls.rhoMAXcont);
 			
 			set_cmap("jet");

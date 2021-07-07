@@ -78,6 +78,16 @@ function godunov2dthreads(pname::String, numThreads::Int64, outputfile::String)
 	@load "testStep2dBaseTriSmooth.bson" testMesh
 	#@load "testStep2dBaseTri.bson" testMesh ## load mesh2d
 	
+	## only for tri meshes!!!
+	triangles = zeros(Int64,testMesh.nCells,3);
+	for i = 1:testMesh.nCells
+	
+		## indexes of nodes in PyPLOT are started from Zero!!!!
+	
+		triangles[i,1] = testMesh.mesh_connectivity[i,4]-1;
+		triangles[i,2] = testMesh.mesh_connectivity[i,5]-1;
+		triangles[i,3] = testMesh.mesh_connectivity[i,6]-1;
+	end
 	
 	cellsThreads = distibuteCellsInThreadsSA(numThreads, testMesh.nCells); ## partition mesh 
 	
@@ -117,6 +127,7 @@ function godunov2dthreads(pname::String, numThreads::Int64, outputfile::String)
 	println("Start calculations ...");
 	println(output.header);
 	
+	@everywhere trianglesX = $triangles;
 	@everywhere testMeshDistrX = $testMeshDistr; 
 	
 	#@everywhere testMeshDistrX = $testMesh_shared;
@@ -145,7 +156,8 @@ function godunov2dthreads(pname::String, numThreads::Int64, outputfile::String)
 	for i = 1:testMesh.nNodes
 		densityF[i] = testfields2dX.densityNodes[i];
 	end
-			
+				
+	
 		 
 	println("Saving  solution to  ", outputfile);
 		saveResults2VTK(outputfile, testMesh, densityF);
@@ -204,7 +216,7 @@ function godunov2dthreads(pname::String, numThreads::Int64, outputfile::String)
 				convergenceCriteria, dynControlsX);
 			
 			updateOutputSA(timeVector,residualsVector1,residualsVector2,residualsVector3,residualsVector4, residualsVectorMax, 
-				testMeshX, testfields2dX, solControlsX, outputX, dynControlsX);
+				testMeshX, trianglesX, testfields2dX, solControlsX, outputX, dynControlsX);
 	
 			
 			# EVALUATE STAGE:
